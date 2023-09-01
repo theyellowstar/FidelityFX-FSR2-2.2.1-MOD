@@ -440,7 +440,7 @@ Log::~Log()
     m_FileHandle = INVALID_HANDLE_VALUE;
 }
 
-void OverlappedCompletionRoutine(DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped)
+void WINAPI OverlappedCompletionRoutine(DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped)
 {
     // We never go into an alert state, so this is just to compile
 }

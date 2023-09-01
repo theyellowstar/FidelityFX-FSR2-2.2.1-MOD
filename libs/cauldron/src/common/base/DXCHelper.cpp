@@ -62,12 +62,12 @@ interface Includer : public ID3DInclude
 public:
     virtual ~Includer() {}
 
-    HRESULT Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
+    STDMETHOD(Open)(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
     {
         std::string fullpath = GetShaderCompilerLibDir() + pFileName;
         return ReadFile(fullpath.c_str(), (char**)ppData, (size_t*)pBytes, false) ? S_OK : E_FAIL;
     }
-    HRESULT Close(LPCVOID pData)
+    STDMETHOD(Close)(LPCVOID pData)
     {
         free((void*)pData);
         return S_OK;
@@ -79,10 +79,10 @@ interface IncluderDxc : public IDxcIncludeHandler
     IDxcLibrary *m_pLibrary;
 public:
     IncluderDxc(IDxcLibrary *pLibrary) : m_pLibrary(pLibrary) {}
-    HRESULT QueryInterface(const IID &, void **) { return S_OK; }
-    ULONG AddRef() { return 0; }
-    ULONG Release() { return 0; }
-    HRESULT LoadSource(LPCWSTR pFilename, IDxcBlob **ppIncludeSource)
+    HRESULT STDMETHODCALLTYPE QueryInterface(const IID &, void **) { return S_OK; }
+    ULONG STDMETHODCALLTYPE AddRef() { return 0; }
+    ULONG STDMETHODCALLTYPE Release() { return 0; }
+    HRESULT STDMETHODCALLTYPE LoadSource(LPCWSTR pFilename, IDxcBlob **ppIncludeSource)
     {
         char fullpath[1024];
         sprintf_s<1024>(fullpath, ("%s\\%S"), GetShaderCompilerLibDir().c_str(), pFilename);
