@@ -102,6 +102,11 @@ void Fsr2Wrapper::Draw(const DrawParameters& params)
     dispatchParameters.enableAutoReactive = true;
     dispatchParameters.colorOpaqueOnly = ffxGetResourceDX11(&m_context, params.unresolvedColorResource, L"FSR2_InputColor");
 
+    dispatchParameters.autoTcThreshold = 0.05f;
+    dispatchParameters.autoTcScale = 1.00f;
+    dispatchParameters.autoReactiveScale = 10.0f;
+    dispatchParameters.autoReactiveMax = 0.90f;
+
 #if COMPILE_FROM_HLSL
     memcpy(&s_initializationParameters, &initializationParameters, sizeof(FfxFsr2ContextDescriptor));
 #endif // #if COMPILE_FROM_HLSL
