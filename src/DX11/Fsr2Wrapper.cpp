@@ -39,11 +39,11 @@ void Fsr2Wrapper::Create(Fsr2Wrapper::ContextParameters params)
     m_contextDesc.displaySize = params.displaySize;
 
     // You should config the flags you need based on your own project
-    m_contextDesc.flags = 0;
+    m_contextDesc.flags = 0
         //FFX_FSR2_ENABLE_MOTION_VECTORS_JITTER_CANCELLATION
         //| FFX_FSR2_ENABLE_HIGH_DYNAMIC_RANGE
         //| FFX_FSR2_ENABLE_DEPTH_INVERTED
-        //| FFX_FSR2_ENABLE_AUTO_EXPOSURE;
+        | FFX_FSR2_ENABLE_AUTO_EXPOSURE;
 
 #if COMPILE_FROM_HLSL
     // Override the shader creation so we can compile from HLSL source.
