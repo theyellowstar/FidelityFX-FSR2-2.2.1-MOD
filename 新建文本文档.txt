@@ -1,0 +1,41 @@
+pass0: tcr_autogen、DelateDepthAndMotionVectors、ComputeLockInputLuma
+others: ComputeShadingChange 
+in: r_input_color_jittered(RGB8), r_input_opoaque_only(RGB8), r_input_motionvectors(R16G16), r_input_prev_color_pre_alpha(R11G11B10?), r_input_prev_color_post_alpha(R11B11G10?), r_input_depth
+out: rw_lock_input_luma(R16f), {rw_autoreactive(R8), rw_autocomposition(R8)}, rw_dilated_motion_vectors(R16G16), rw_dilatedDepth(R24)
+in2:
+out2: rw_output_prev_color_post_alpha(R11G11B10?我R16G16B16A16、YCoCg、r_prepared_input_color?), rw_output_prev_color_pre_alpha(R11G11B10?我R16G16B16A16、YCoCg?), rw_img_mip_shading_change(R16), depthclip(R8，本来放在YCoCgA)?
+merge: rw_dilatedDepth(R24Depth), 
+
+pass1: dilate_reactiveandcomposition, ComputeLock
+others: depthclip
+in: rw_lock_input_luma(R16f), {rw_autoreactive(R8), rw_autocomposition(R8)}, r_input_motionvectors(R16G16), rw_dilated_motion_vectors(1, R16G16), rw_dilatedDepth(R24), r_previous_dilated_motion_vectors(rw_dilated_motion_vectors0, R16G16)
+out: rw_new_locks(Bool, inHighRes ? linearsample?), rw_dilated_reactiveandcomposition(R8G8), 
+in2: r_reconstructed_previous_nearest_depth(rw_dilatedDepth0, R24)
+out2: depthclip(R8，本来放在YCoCgA)?
+
+pass2
+in: rw_new_locks(Bool, inHighRes ? linearsample?), rw_dilated_reactiveandcomposition(R8G8), rw_internal_upscaled_color0(R16G16B16A16，最后一位TemporalReactiveFactor)
+out:rw_internal_upscaled_color1(R16G16B16A16)
+in2:
+out2:
+
+pingpong: prev_color_pre_alpha、prev_color_post_alpha、dilated_motion_vectors、rw_internal_upscaled_color
+others: rw_dilatedDepth(R24)
+
+autoTC: {InputMotionVector, pre_alpha(YCoCg), post_alpha(YCoCg)}点对点, {prev_pre_alpha(YCoCg), prev_post_alpha(YCoCg)}上一帧点对点, 
+autoReactive: {InputMotionVector, autoTC}(点对点), {pre_alpha, post_alpha}一圈, {prev_pre_alpha, prev_post_alpha}上一帧一圈
+prev_color_pre_alpha: pingpong
+prev_color_post_alpha: pingpong
+lock_input_luma: input_color点对点
+dilatedDepth：inputdepth一圈
+dilated_motion_vectors: inputdepth一圈
+rw_img_mip_shading_change: input_color一圈？
+depthclip：DilatedMotionVector点对点，DilatedDepth点对点，previous_depth上帧一圈
+Prepared_Color: input_color->YCoCg
+
+r_previous_dilated_motion_vectors: dilated_motion_vectors pingpong
+
+
+
+
+depthclip放在哪个pass?
